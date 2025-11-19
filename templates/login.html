@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - IP地址管理系统</title>
+    <!-- 网站图标 -->
+    <link rel="icon" href="/static/img/favicon.png" type="image/png">
+    <!-- 使用本地Bootstrap -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* 全局样式 */
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-attachment: fixed;
+        }
+        
+        /* 登录容器 */
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 15px;
+            margin: auto;
+        }
+        
+        /* 登录卡片 */
+        .login-card {
+            background-color: white;
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .login-card:hover {
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        /* 登录标题 */
+        .login-title {
+            text-align: center;
+            margin-bottom: 35px;
+            color: #343a40;
+            font-size: 24px;
+            font-weight: 600;
+            position: relative;
+        }
+        
+        .login-title::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            margin: 10px auto 0;
+            border-radius: 3px;
+        }
+        
+        /* 表单组 */
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        /* 输入框 */
+        .form-control {
+            height: 50px;
+            padding: 10px 20px;
+            font-size: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+        }
+        
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background-color: white;
+        }
+        
+        /* 标签 */
+        label {
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 8px;
+            display: block;
+            transition: color 0.3s ease;
+        }
+        
+        .form-control:focus + label {
+            color: #667eea;
+        }
+        
+        /* 登录按钮 */
+        .btn-login {
+            width: 100%;
+            height: 50px;
+            padding: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-login:active {
+            transform: translateY(0);
+        }
+        
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .btn-login:hover::before {
+            left: 100%;
+        }
+        
+        /* 加载状态 */
+        .btn-login.loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        /* 提示消息 */
+        .alert {
+            border-radius: 8px;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            animation: slideIn 0.3s ease;
+        }
+        
+        /* 动画 */
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        /* 页面加载动画 */
+        .login-card {
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 30px 20px;
+            }
+            
+            .login-title {
+                font-size: 20px;
+            }
+            
+            .form-control {
+                height: 45px;
+                font-size: 14px;
+            }
+            
+            .btn-login {
+                height: 45px;
+                font-size: 15px;
+            }
+        }
+        
+
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <h2 class="login-title">IP地址管理系统</h2>
+            
+            <!-- 消息提示 -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <!-- 登录表单 -->
+            <form method="POST" action="{{ url_for('login') }}" id="loginForm">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名" required>
+                    <label for="username">用户名</label>
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码" required>
+                    <label for="password">密码</label>
+                </div>
+                <button type="submit" class="btn btn-primary btn-login" id="loginBtn">
+                    <span id="btnText">登录</span>
+                    <span id="btnLoading" style="display: none;">登录中...</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 引入Bootstrap JavaScript -->
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 表单处理脚本 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const loginBtn = document.getElementById('loginBtn');
+            const btnText = document.getElementById('btnText');
+            const btnLoading = document.getElementById('btnLoading');
+            
+            // 表单提交处理
+            loginForm.addEventListener('submit', function(e) {
+                // 简单的表单验证
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                if (!username.trim() || !password.trim()) {
+                    e.preventDefault();
+                    alert('请输入用户名和密码');
+                    return;
+                }
+                
+                // 显示加载状态
+                loginBtn.disabled = true;
+                btnText.style.display = 'none';
+                btnLoading.style.display = 'inline';
+            });
+            
+            // 输入框焦点处理
+            const inputs = document.querySelectorAll('.form-control');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.classList.add('focused');
+                });
+                
+                input.addEventListener('blur', function() {
+                    if (!this.value) {
+                        this.parentElement.classList.remove('focused');
+                    }
+                });
+                
+                // 如果输入框有值，保持焦点样式
+                if (input.value) {
+                    input.parentElement.classList.add('focused');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

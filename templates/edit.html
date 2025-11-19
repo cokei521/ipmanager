@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编辑IP地址 - IP地址管理系统</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}" type="image/png">
+    <!-- 使用本地Bootstrap -->
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <style>
+        .form-control:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+        .btn-primary {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0a58ca;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5c636a;
+            border-color: #565e64;
+        }
+        .form-check-input:checked {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="text-center mb-4"><a href="{{ url_for('index') }}" style="text-decoration: none; color: inherit;">编辑IP地址</a></h1>
+        
+        <!-- 消息提示 -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <!-- 编辑IP地址表单 -->
+        <form action="{{ url_for('edit_ip', id=ip.id) }}" method="POST">
+            <div class="row">
+                <!-- 第一列 -->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="logical_division" class="form-label">逻辑划分 <span class="text-danger">*</span></label>
+                        <select id="logical_division" name="logical_division" class="form-select" required>
+                            {% for division in logical_divisions %}
+                                <option value="{{ division }}" {% if ip.logical_division == division %}selected{% endif %}>{{ division }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="ip_address" class="form-label">IP地址 <span class="text-danger">*</span></label>
+                        <input type="text" id="ip_address" name="ip_address" class="form-control" value="{{ ip.ip_address }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="subnet_mask" class="form-label">掩码 <span class="text-danger">*</span></label>
+                        <input type="text" id="subnet_mask" name="subnet_mask" class="form-control" value="{{ ip.subnet_mask }}" placeholder="例如：255.255.255.0 或 24" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input type="checkbox" id="in_use" name="in_use" class="form-check-input" {% if ip.in_use %}checked{% endif %}>
+                            <label for="in_use" class="form-check-label">在用</label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="device_name" class="form-label">设备名称</label>
+                        <input type="text" id="device_name" name="device_name" class="form-control" value="{{ ip.device_name or '' }}" placeholder="输入设备名称">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="system" class="form-label">所属系统</label>
+                        <input type="text" id="system" name="system" class="form-control" value="{{ ip.system or '' }}" placeholder="输入所属系统">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="related_device" class="form-label">关联设备</label>
+                        <input type="text" id="related_device" name="related_device" class="form-control" value="{{ ip.related_device or '' }}" placeholder="输入关联设备">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="department" class="form-label">所属科室</label>
+                        <input type="text" id="department" name="department" class="form-control" value="{{ ip.department or '' }}" placeholder="输入所属科室">
+                    </div>
+                </div>
+                
+                <!-- 第二列 -->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="responsible_person" class="form-label">责任人</label>
+                        <input type="text" id="responsible_person" name="responsible_person" class="form-control" value="{{ ip.responsible_person or '' }}" placeholder="输入责任人姓名">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="responsible_person_phone" class="form-label">责任人电话</label>
+                        <input type="text" id="responsible_person_phone" name="responsible_person_phone" class="form-control" value="{{ ip.responsible_person_phone or '' }}" placeholder="输入责任人电话">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="vendor_responsible_person" class="form-label">厂家责任人</label>
+                        <input type="text" id="vendor_responsible_person" name="vendor_responsible_person" class="form-control" value="{{ ip.vendor_responsible_person or '' }}" placeholder="输入厂家责任人姓名">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="vendor_responsible_person_phone" class="form-label">厂家责任人电话</label>
+                        <input type="text" id="vendor_responsible_person_phone" name="vendor_responsible_person_phone" class="form-control" value="{{ ip.vendor_responsible_person_phone or '' }}" placeholder="输入厂家责任人电话">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="work_order_number" class="form-label">工单号</label>
+                        <input type="text" id="work_order_number" name="work_order_number" class="form-control" value="{{ ip.work_order_number or '' }}" placeholder="输入工单号">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="location" class="form-label">位置</label>
+                        <input type="text" id="location" name="location" class="form-control" value="{{ ip.location or '' }}" placeholder="输入位置信息">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input type="checkbox" id="is_scanned" name="is_scanned" class="form-check-input" {% if ip.is_scanned %}checked{% endif %}>
+                            <label for="is_scanned" class="form-check-label">是否扫描</label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="update_date" class="form-label">更新日期 <span class="text-danger">*</span></label>
+                        <input type="date" id="update_date" name="update_date" class="form-control" value="{{ update_date_formatted }}" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="remarks" class="form-label">备注</label>
+                <textarea id="remarks" name="remarks" class="form-control" rows="3" placeholder="输入备注信息">{{ ip.remarks or '' }}</textarea>
+            </div>
+            
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary btn-lg">更新IP地址</button>
+                <a href="{{ url_for('index') }}" class="btn btn-secondary btn-lg ms-2">返回列表</a>
+            </div>
+        </form>
+    </div>
+    
+    <!-- 使用本地Bootstrap -->
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    
+    <script>
+        // 自动补全功能
+        function initAutocomplete(fieldId, fieldName) {
+            const input = document.getElementById(fieldId);
+            let autocompleteList = null;
+            
+            input.addEventListener('input', function(e) {
+                const query = e.target.value;
+                
+                // 清除旧的自动补全列表
+                if (autocompleteList) {
+                    autocompleteList.remove();
+                    autocompleteList = null;
+                }
+                
+                // 如果查询词太短，不发送请求
+                if (query.length < 1) {
+                    return;
+                }
+                
+                // 发送请求获取自动补全数据
+                fetch(`/autocomplete?field=${fieldName}&query=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.results && data.results.length > 0) {
+                            showAutocompleteList(data.results, e.target);
+                        }
+                    })
+                    .catch(error => console.error('自动补全请求错误:', error));
+            });
+            
+            // 点击页面其他地方关闭自动补全列表
+            document.addEventListener('click', function(e) {
+                if (autocompleteList && !input.contains(e.target) && !autocompleteList.contains(e.target)) {
+                    autocompleteList.remove();
+                    autocompleteList = null;
+                }
+            });
+            
+            function showAutocompleteList(results, inputElement) {
+                // 创建自动补全列表
+                autocompleteList = document.createElement('div');
+                autocompleteList.className = 'autocomplete-list list-group position-absolute z-10';
+                autocompleteList.style.width = `${inputElement.offsetWidth}px`;
+                autocompleteList.style.marginTop = '2px';
+                autocompleteList.style.borderRadius = '0.375rem';
+                autocompleteList.style.boxShadow = '0 0.5rem 1rem rgba(0, 0, 0, 0.15)';
+                
+                // 添加结果项
+                results.forEach(result => {
+                    const item = document.createElement('a');
+                    item.className = 'list-group-item list-group-item-action';
+                    item.textContent = result;
+                    item.href = '#';
+                    
+                    // 点击结果项时填充输入框
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        inputElement.value = result;
+                        autocompleteList.remove();
+                        autocompleteList = null;
+                    });
+                    
+                    autocompleteList.appendChild(item);
+                });
+                
+                // 将列表添加到页面
+                inputElement.parentElement.appendChild(autocompleteList);
+            }
+        }
+        
+        // 初始化需要自动补全的字段
+        document.addEventListener('DOMContentLoaded', function() {
+            // 为多个字段添加自动补全
+            initAutocomplete('device_name', 'device_name');
+            initAutocomplete('system', 'system');
+            initAutocomplete('related_device', 'related_device');
+            initAutocomplete('department', 'department');
+            initAutocomplete('responsible_person', 'responsible_person');
+            initAutocomplete('responsible_person_phone', 'responsible_person_phone');
+            initAutocomplete('vendor_responsible_person', 'vendor_responsible_person');
+            initAutocomplete('vendor_responsible_person_phone', 'vendor_responsible_person_phone');
+            initAutocomplete('work_order_number', 'work_order_number');
+            initAutocomplete('location', 'location');
+        });
+    </script>
+</body>
+</html>

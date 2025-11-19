@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP地址管理系统</title>
+    <!-- 网站图标 -->
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}" type="image/png">
+    <!-- 使用本地Bootstrap -->
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <style>
+        /* 全局样式 */
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px 0;
+            background-attachment: fixed;
+        }
+        
+        /* 导航栏美化 */
+        .navbar {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin: 0 20px 30px;
+            padding: 10px 20px;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .navbar-brand {
+            font-weight: 600;
+            color: #667eea !important;
+            font-size: 20px;
+        }
+        
+        .navbar-nav .nav-link {
+            color: #495057 !important;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .navbar-nav .nav-link:hover {
+            color: #667eea !important;
+        }
+        
+        /* 导航栏文本垂直居中 */
+        .navbar-text {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            margin: 0;
+            padding: 0 15px;
+            color: #495057 !important;
+            font-weight: 500;
+        }
+        
+        /* 容器样式 */
+        .container-fluid {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* 标题样式 */
+        h1 {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease;
+        }
+        
+        h1 a {
+            color: white !important;
+        }
+        
+        /* 统计卡片 */
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s ease;
+            overflow: hidden;
+        }
+        
+        /* 移除渐变边框以避免与卡片背景色混合 */
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-body {
+            padding: 25px;
+            position: relative;
+        }
+        
+        /* 表格容器 */
+        .table-container {
+            max-height: 1600px;
+            overflow-y: auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            padding: 0 20px;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        /* 表格样式 */
+        .table thead th {
+            position: sticky;
+            top: 0;
+            background-color: #f8f9fa;
+            z-index: 2;
+            border-top: none;
+            font-weight: 600;
+            color: #495057;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .table tbody {
+            font-size: 0.875rem; /* 14px */
+            position: relative;
+            z-index: 1;
+        }
+        
+        .table td {
+            vertical-align: middle !important;
+            height: auto;
+            padding: 12px 15px;
+            background-color: white;
+        }
+        
+        .table td .btn {
+            margin: 0 2px;
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+        
+        /* 表单样式 */
+        .form-control {
+            height: 45px;
+            padding: 10px 20px;
+            font-size: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+        }
+        
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background-color: white;
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            padding: 10px 20px;
+            font-size: 15px;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #5a6fd8 0%, #6b4291 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+        }
+        
+        .btn-info {
+            background-color: #17a2b8;
+        }
+        
+        .btn-info:hover {
+            background-color: #138496;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+        
+        /* 搜索栏 */
+        .d-flex .form-control {
+            flex: 1;
+        }
+        
+        /* 模态框样式 */
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            border-bottom: none;
+            padding: 25px 30px 15px;
+        }
+        
+        .modal-title {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .modal-body {
+            padding: 15px 30px 25px;
+        }
+        
+        /* 提示消息 */
+        .alert {
+            border-radius: 8px;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            animation: slideIn 0.3s ease;
+            margin: 0 20px 20px;
+        }
+        
+        /* 动画 */
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px 0;
+            }
+            
+            .navbar {
+                margin: 0 10px 20px;
+                padding: 10px;
+            }
+            
+            .container-fluid {
+                padding: 0 10px;
+            }
+            
+            .table-container {
+                padding: 15px;
+            }
+            
+            .table td {
+                padding: 8px 10px;
+                font-size: 0.75rem;
+            }
+            
+            .table td .btn {
+                padding: 4px 8px;
+                font-size: 12px;
+            }
+        }
+        
+        /* 其他样式 */
+        .toggle-column {
+            display: none;
+        }
+        
+        .hidden-column {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <!-- 消息提示 -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('index') }}">IP地址管理系统</a>
+            <div class="navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <span class="navbar-text me-3">欢迎，{{ current_user.username }}</span>
+                        </li>
+                        {% if current_user.role.can_manage_users %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('users') }}">用户管理</a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('logout') }}">退出登录</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}">登录</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container-fluid">
+        <h1 class="text-center mb-4"><a href="{{ url_for('index') }}" style="text-decoration: none; color: inherit;">IP地址管理系统</a></h1>
+        
+        <!-- IP地址统计信息 -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card text-center bg-primary text-white clickable-card" data-filter="all">
+                    <div class="card-body">
+                        <h5 class="card-title">总IP地址</h5>
+                        <p class="card-text display-4">{{ total_ips }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center bg-success text-white clickable-card" data-filter="used">
+                    <div class="card-body">
+                        <h5 class="card-title">在用IP地址</h5>
+                        <p class="card-text display-4">{{ used_ips }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center bg-secondary text-white clickable-card" data-filter="free">
+                    <div class="card-body">
+                        <h5 class="card-title">空闲IP地址</h5>
+                        <p class="card-text display-4">{{ free_ips }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            // 为统计卡片添加点击事件
+            document.addEventListener('DOMContentLoaded', function() {
+                const cards = document.querySelectorAll('.clickable-card');
+                cards.forEach(card => {
+                    card.addEventListener('click', function() {
+                        const filter = this.getAttribute('data-filter');
+                        let url = '/';
+                        if (filter === 'used') {
+                            url += '?in_use=true';
+                        } else if (filter === 'free') {
+                            url += '?in_use=false';
+                        }
+                        window.location.href = url;
+                    });
+                    // 添加鼠标悬停效果
+                    card.style.cursor = 'pointer';
+                    card.addEventListener('mouseenter', function() {
+                        this.style.opacity = '0.9';
+                        this.style.transform = 'scale(1.02)';
+                        this.style.transition = 'opacity 0.2s, transform 0.2s';
+                    });
+                    card.addEventListener('mouseleave', function() {
+                        this.style.opacity = '1';
+                        this.style.transform = 'scale(1)';
+                    });
+                });
+            });
+        </script>
+        
+        <!-- 搜索栏 -->
+        <div class="row mb-4">
+            <div class="col-md-6 offset-md-3">
+                <form action="{{ url_for('search') }}" method="GET" class="d-flex">
+                    <input type="text" name="query" class="form-control" placeholder="搜索IP地址、设备名称、责任人或科室" value="{{ search_query }}">
+                    <button type="submit" class="btn btn-primary ms-2">搜索</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- 操作按钮区域 -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="d-flex justify-content-start">
+                    <button id="toggleColumnsBtn" class="btn btn-secondary">显示详细信息</button>
+                    <button type="button" class="btn btn-info ms-2" data-bs-toggle="modal" data-bs-target="#columnSelectModal">列选择</button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex justify-content-end">
+                    <!-- 导出Excel按钮 -->
+                    <form id="exportForm" action="{{ url_for('export_excel') }}" method="POST" class="d-inline">
+                        <button type="button" id="exportBtn" class="btn btn-success me-2" disabled>导出Excel</button>
+                    </form>
+                    
+                    <!-- 导入Excel按钮 -->
+                    <button type="button" class="btn btn-info me-2" data-bs-toggle="modal" data-bs-target="#importModal">导入Excel</button>
+                    
+                    <!-- 批量删除按钮 -->
+                    <button id="batchDeleteBtn" class="btn btn-danger me-2" disabled>批量删除</button>
+                    
+                    <!-- 添加IP地址按钮 -->
+                    <a href="{{ url_for('add_ip') }}" class="btn btn-primary" target="_blank">添加IP地址</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 导入Excel模态框 -->
+        <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="importModalLabel">导入IP地址</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="importForm" action="{{ url_for('import_excel') }}" method="POST" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="excelFile" class="form-label">选择Excel文件</label>
+                                <input type="file" class="form-control" id="excelFile" name="file" accept=".xlsx" required>
+                                <div class="form-text">请选择.xlsx格式的Excel文件，文件应包含：IP地址、掩码、逻辑划分等列。</div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                                <button type="submit" class="btn btn-primary">导入</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 列选择模态框 -->
+        <div class="modal fade" id="columnSelectModal" tabindex="-1" aria-labelledby="columnSelectModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="columnSelectModalLabel">选择显示列</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="columnSelectForm">
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input column-checkbox" type="checkbox" value="logical_division" id="logical_division" checked disabled>
+                                    <label class="form-check-label" for="logical_division">
+                                        逻辑划分
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input column-checkbox" type="checkbox" value="ip_address" id="ip_address" checked disabled>
+                                    <label class="form-check-label" for="ip_address">
+                                        IP地址
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input column-checkbox" type="checkbox" value="subnet_mask" id="subnet_mask" checked disabled>
+                                    <label class="form-check-label" for="subnet_mask">
+                                        掩码
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input column-checkbox" type="checkbox" value="device_name" id="device_name" checked disabled>
+                                    <label class="form-check-label" for="device_name">
+                                        设备名称
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input column-checkbox" type="checkbox" value="system" id="system" checked disabled>
+                                    <label class="form-check-label" for="system">
+                                        所属系统
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input column-checkbox" type="checkbox" value="responsible_person" id="responsible_person" checked disabled>
+                                    <label class="form-check-label" for="responsible_person">
+                                        责任人
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input column-checkbox" type="checkbox" value="in_use" id="in_use" checked>
+                                    <label class="form-check-label" for="in_use">
+                                        在用
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input column-checkbox" type="checkbox" value="related_device" id="related_device">
+                                    <label class="form-check-label" for="related_device">
+                                        关联设备
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input column-checkbox" type="checkbox" value="department" id="department">
+                                    <label class="form-check-label" for="department">
+                                        所属科室
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input column-checkbox" type="checkbox" value="responsible_person_phone" id="responsible_person_phone">
+                                    <label class="form-check-label" for="responsible_person_phone">
+                                        责任人电话
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input column-checkbox" type="checkbox" value="vendor_responsible_person" id="vendor_responsible_person">
+                                    <label class="form-check-label" for="vendor_responsible_person">
+                                        厂家责任人
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input column-checkbox" type="checkbox" value="vendor_responsible_person_phone" id="vendor_responsible_person_phone">
+                                    <label class="form-check-label" for="vendor_responsible_person_phone">
+                                        厂家责任人电话
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input column-checkbox" type="checkbox" value="work_order_number" id="work_order_number">
+                                    <label class="form-check-label" for="work_order_number">
+                                        工单号
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input column-checkbox" type="checkbox" value="location" id="location">
+                                    <label class="form-check-label" for="location">
+                                        位置
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input column-checkbox" type="checkbox" value="is_scanned" id="is_scanned">
+                                    <label class="form-check-label" for="is_scanned">
+                                        是否扫描
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input column-checkbox" type="checkbox" value="update_date" id="update_date">
+                                    <label class="form-check-label" for="update_date">
+                                        更新日期
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input column-checkbox" type="checkbox" value="remarks" id="remarks">
+                                    <label class="form-check-label" for="remarks">
+                                        备注
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input column-checkbox" type="checkbox" value="action" id="action" checked disabled>
+                                    <label class="form-check-label" for="action">
+                                        操作
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                                <button type="button" class="btn btn-primary" onclick="applyColumnSelection()">应用</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- IP详细信息模态框 -->
+        <div class="modal fade" id="ipDetailsModal" tabindex="-1" aria-labelledby="ipDetailsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="ipDetailsModalLabel">IP地址详细信息</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <style>
+                            .detail-item {
+                                margin-bottom: 1rem;
+                                padding: 0.75rem;
+                                background-color: #f8f9fa;
+                                border-radius: 0.375rem;
+                                border-left: 4px solid #0d6efd;
+                            }
+                            .detail-label {
+                                font-weight: 700;
+                                color: #212529;
+                                margin-bottom: 0.25rem;
+                                display: block;
+                            }
+                            .detail-value {
+                                color: #495057;
+                                margin: 0;
+                                word-break: break-all;
+                            }
+                        </style>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <span class="detail-label">逻辑划分</span>
+                                    <p class="detail-value" id="detailsLogicalDivision"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <span class="detail-label">IP地址</span>
+                                    <p class="detail-value" id="detailsIpAddress"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <span class="detail-label">掩码</span>
+                                    <p class="detail-value" id="detailsSubnetMask"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <span class="detail-label">在用</span>
+                                    <p class="detail-value" id="detailsInUse"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <span class="detail-label">设备名称</span>
+                                    <p class="detail-value" id="detailsDeviceName"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <span class="detail-label">所属系统</span>
+                                    <p class="detail-value" id="detailsSystem"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <span class="detail-label">关联设备</span>
+                                    <p class="detail-value" id="detailsRelatedDevice"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <span class="detail-label">所属科室</span>
+                                    <p class="detail-value" id="detailsDepartment"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <span class="detail-label">责任人</span>
+                                    <p class="detail-value" id="detailsResponsiblePerson"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <span class="detail-label">责任人电话</span>
+                                    <p class="detail-value" id="detailsResponsiblePersonPhone"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <span class="detail-label">厂家责任人</span>
+                                    <p class="detail-value" id="detailsVendorResponsiblePerson"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <span class="detail-label">厂家责任人电话</span>
+                                    <p class="detail-value" id="detailsVendorResponsiblePersonPhone"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <span class="detail-label">工单号</span>
+                                    <p class="detail-value" id="detailsWorkOrderNumber"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <span class="detail-label">位置</span>
+                                    <p class="detail-value" id="detailsLocation"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <span class="detail-label">是否扫描</span>
+                                    <p class="detail-value" id="detailsIsScanned"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <span class="detail-label">更新日期</span>
+                                    <p class="detail-value" id="detailsUpdateDate"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="detail-item">
+                                    <span class="detail-label">备注</span>
+                                    <p class="detail-value" id="detailsRemarks"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+        
+        <!-- IP地址表格 -->
+        <div class="table-container">
+            <table class="table table-striped table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll" class="form-check-input"></th>
+                        <th data-column="logical_division">逻辑划分</th>
+                        <th data-column="ip_address">IP地址</th>
+                        <th data-column="subnet_mask">掩码</th>
+                        <th data-column="in_use">在用</th>
+                        <th data-column="device_name">设备名称</th>
+                        <th data-column="system">所属系统</th>
+                        <th data-column="related_device" class="hidden-column">关联设备</th>
+                        <th data-column="department" class="hidden-column">所属科室</th>
+                        <th data-column="responsible_person">责任人</th>
+                        <th data-column="responsible_person_phone" class="hidden-column">责任人电话</th>
+                        <th data-column="vendor_responsible_person" class="hidden-column">厂家责任人</th>
+                        <th data-column="vendor_responsible_person_phone" class="hidden-column">厂家责任人电话</th>
+                        <th data-column="work_order_number" class="hidden-column">工单号</th>
+                        <th data-column="location" class="hidden-column">位置</th>
+                        <th data-column="is_scanned" class="hidden-column">是否扫描</th>
+                        <th data-column="update_date" class="hidden-column">更新日期</th>
+                        <th data-column="remarks" class="hidden-column">备注</th>
+                        <th data-column="action">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ip in ip_addresses.items %}
+                    <tr>
+                        <td><input type="checkbox" name="ip_ids" value="{{ ip.id }}" class="form-check-input ip-checkbox"></td>
+                        <td data-column="logical_division">{{ ip.logical_division }}</td>
+                        <td data-column="ip_address">{{ ip.ip_address }}</td>
+                        <td data-column="subnet_mask">{{ ip.subnet_mask }}</td>
+                        <td data-column="in_use">{{ '是' if ip.in_use else '否' }}</td>
+                        <td data-column="device_name">{{ ip.device_name or '-' }}</td>
+                        <td data-column="system">{{ ip.system or '-' }}</td>
+                        <td data-column="related_device" class="hidden-column">{{ ip.related_device or '-' }}</td>
+                        <td data-column="department" class="hidden-column">{{ ip.department or '-' }}</td>
+                        <td data-column="responsible_person">{{ ip.responsible_person or '-' }}</td>
+                        <td data-column="responsible_person_phone" class="hidden-column">{{ ip.responsible_person_phone or '-' }}</td>
+                        <td data-column="vendor_responsible_person" class="hidden-column">{{ ip.vendor_responsible_person or '-' }}</td>
+                        <td data-column="vendor_responsible_person_phone" class="hidden-column">{{ ip.vendor_responsible_person_phone or '-' }}</td>
+                        <td data-column="work_order_number" class="hidden-column">{{ ip.work_order_number or '-' }}</td>
+                        <td data-column="location" class="hidden-column">{{ ip.location or '-' }}</td>
+                        <td data-column="is_scanned" class="hidden-column">{{ '是' if ip.is_scanned else '否' }}</td>
+                        <td data-column="update_date" class="hidden-column">{{ ip.update_date }}</td>
+                        <td data-column="remarks" class="hidden-column">{{ ip.remarks or '-' }}</td>
+                        <td data-column="action">
+                            <div class="d-flex align-items-center">
+                                <button class="btn btn-sm btn-info me-2" onclick="viewIPDetails({{ ip.id }})">查看</button>
+                                <a href="{{ url_for('edit_ip', id=ip.id) }}" class="btn btn-sm btn-warning me-2">编辑</a>
+                                <form action="{{ url_for('delete_ip', id=ip.id) }}" method="POST" class="m-0">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('确定要删除此IP地址吗？');">删除</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="19" class="text-center">暂无IP地址记录</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- 分页导航 -->
+        {% if ip_addresses.pages > 1 %}
+        <div class="mt-3 d-flex justify-content-center">
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <!-- 上一页按钮 -->
+                    {% if ip_addresses.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{% if search_query %}?query={{ search_query }}&{% else %}?{% endif %}page={{ ip_addresses.prev_num }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-hidden="true">&laquo;</span>
+                    </li>
+                    {% endif %}
+                    
+                    <!-- 页码列表 -->
+                    {% for page_num in ip_addresses.iter_pages(left_edge=2, right_edge=2, left_current=2, right_current=2) %}
+                        {% if page_num %}
+                            {% if page_num == ip_addresses.page %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_num }}</span>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="{% if search_query %}?query={{ search_query }}&{% else %}?{% endif %}page={{ page_num }}">{{ page_num }}</a>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    <!-- 下一页按钮 -->
+                    {% if ip_addresses.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{% if search_query %}?query={{ search_query }}&{% else %}?{% endif %}page={{ ip_addresses.next_num }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-hidden="true">&raquo;</span>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        <div class="text-center mt-2">
+            <small>第 {{ ip_addresses.page }}/{{ ip_addresses.pages }} 页，共 {{ ip_addresses.total }} 条记录</small>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- 使用本地Bootstrap -->
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    
+    <!-- JavaScript逻辑 -->
+        <script>
+            // 显示/隐藏列功能
+            document.getElementById('toggleColumnsBtn').addEventListener('click', function() {
+                const allColumns = document.querySelectorAll('[data-column]:not([data-column="logical_division"]):not([data-column="ip_address"]):not([data-column="subnet_mask"]):not([data-column="device_name"]):not([data-column="system"]):not([data-column="responsible_person"]):not([data-column="action"])');
+                const isAnyHidden = Array.from(allColumns).some(col => {
+                    return col.style.display === 'none' || window.getComputedStyle(col).display === 'none';
+                });
+                
+                allColumns.forEach(column => {
+                    column.style.display = isAnyHidden ? 'table-cell' : 'none';
+                    
+                    // 更新列选择模态框中的复选框状态
+                    const columnName = column.getAttribute('data-column');
+                    const checkbox = document.getElementById(columnName);
+                    if (checkbox) {
+                        checkbox.checked = isAnyHidden;
+                    }
+                });
+                
+                // 更新按钮文本
+                this.textContent = isAnyHidden ? '隐藏详细信息' : '显示详细信息';
+            });
+            
+            // 列选择功能
+            function applyColumnSelection() {
+                const checkboxes = document.querySelectorAll('.column-checkbox:not(:disabled)');
+                
+                checkboxes.forEach(checkbox => {
+                    const columnName = checkbox.value;
+                    const columns = document.querySelectorAll(`[data-column="${columnName}"]`);
+                    
+                    if (checkbox.checked) {
+                        columns.forEach(col => {
+                            col.style.display = 'table-cell';
+                        });
+                    } else {
+                        columns.forEach(col => {
+                            col.style.display = 'none';
+                        });
+                    }
+                });
+                
+                // 关闭模态框
+                const modal = bootstrap.Modal.getInstance(document.getElementById('columnSelectModal'));
+                modal.hide();
+            }
+            
+            // 查看IP详细信息功能
+            function viewIPDetails(ipId) {
+                // 获取当前行的数据
+                const row = document.querySelector(`input[name="ip_ids"][value="${ipId}"]`).closest('tr');
+                
+                // 填充详细信息模态框
+                document.getElementById('detailsLogicalDivision').textContent = row.querySelector('[data-column="logical_division"]').textContent;
+                document.getElementById('detailsIpAddress').textContent = row.querySelector('[data-column="ip_address"]').textContent;
+                document.getElementById('detailsSubnetMask').textContent = row.querySelector('[data-column="subnet_mask"]').textContent;
+                document.getElementById('detailsInUse').textContent = row.querySelector('[data-column="in_use"]').textContent;
+                document.getElementById('detailsDeviceName').textContent = row.querySelector('[data-column="device_name"]').textContent;
+                document.getElementById('detailsSystem').textContent = row.querySelector('[data-column="system"]').textContent;
+                document.getElementById('detailsRelatedDevice').textContent = row.querySelector('[data-column="related_device"]').textContent;
+                document.getElementById('detailsDepartment').textContent = row.querySelector('[data-column="department"]').textContent;
+                document.getElementById('detailsResponsiblePerson').textContent = row.querySelector('[data-column="responsible_person"]').textContent;
+                document.getElementById('detailsResponsiblePersonPhone').textContent = row.querySelector('[data-column="responsible_person_phone"]').textContent;
+                document.getElementById('detailsVendorResponsiblePerson').textContent = row.querySelector('[data-column="vendor_responsible_person"]').textContent;
+                document.getElementById('detailsVendorResponsiblePersonPhone').textContent = row.querySelector('[data-column="vendor_responsible_person_phone"]').textContent;
+                document.getElementById('detailsWorkOrderNumber').textContent = row.querySelector('[data-column="work_order_number"]').textContent;
+                document.getElementById('detailsLocation').textContent = row.querySelector('[data-column="location"]').textContent;
+                document.getElementById('detailsIsScanned').textContent = row.querySelector('[data-column="is_scanned"]').textContent;
+                document.getElementById('detailsUpdateDate').textContent = row.querySelector('[data-column="update_date"]').textContent;
+                document.getElementById('detailsRemarks').textContent = row.querySelector('[data-column="remarks"]').textContent;
+                
+                // 显示模态框
+                const modal = new bootstrap.Modal(document.getElementById('ipDetailsModal'));
+                modal.show();
+            }
+            
+            // 全选/取消全选功能
+            const selectAllCheckbox = document.getElementById('selectAll');
+            const ipCheckboxes = document.querySelectorAll('.ip-checkbox');
+            const batchDeleteBtn = document.getElementById('batchDeleteBtn');
+            const exportBtn = document.getElementById('exportBtn');
+            
+            selectAllCheckbox.addEventListener('change', function() {
+                ipCheckboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+                updateButtons();
+            });
+            
+            // 监听单个复选框的变化，更新按钮状态
+            ipCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    updateButtons();
+                    
+                    // 更新全选框状态
+                    const allChecked = Array.from(ipCheckboxes).every(cb => cb.checked);
+                    const anyChecked = Array.from(ipCheckboxes).some(cb => cb.checked);
+                    selectAllCheckbox.checked = allChecked;
+                    selectAllCheckbox.indeterminate = anyChecked && !allChecked;
+                });
+            });
+            
+            // 更新按钮的启用/禁用状态
+            function updateButtons() {
+                const anyChecked = Array.from(ipCheckboxes).some(checkbox => checkbox.checked);
+                batchDeleteBtn.disabled = !anyChecked;
+                exportBtn.disabled = !anyChecked;
+            }
+            
+            // 批量删除功能
+            batchDeleteBtn.addEventListener('click', function() {
+                const selectedIds = Array.from(ipCheckboxes)
+                    .filter(checkbox => checkbox.checked)
+                    .map(checkbox => checkbox.value);
+                
+                if (selectedIds.length > 0) {
+                    if (confirm(`确定要删除选中的${selectedIds.length}个IP地址吗？`)) {
+                        // 创建一个表单并提交
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = '{{ url_for('batch_delete_ip') }}';
+                        
+                        // 添加选中的ID到表单
+                        selectedIds.forEach(id => {
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = 'ip_ids';
+                            input.value = id;
+                            form.appendChild(input);
+                        });
+                        
+                        // 添加表单到页面并提交
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                }
+            });
+            
+            // 导出Excel功能
+            exportBtn.addEventListener('click', function() {
+                const selectedIds = Array.from(ipCheckboxes)
+                    .filter(checkbox => checkbox.checked)
+                    .map(checkbox => checkbox.value);
+                
+                if (selectedIds.length > 0) {
+                    // 创建一个表单并提交
+                    const exportForm = document.getElementById('exportForm');
+                    
+                    // 移除已有的ip_ids输入
+                    const existingInputs = exportForm.querySelectorAll('input[name="ip_ids"]');
+                    existingInputs.forEach(input => input.remove());
+                    
+                    // 添加选中的ID到表单
+                    selectedIds.forEach(id => {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'ip_ids';
+                        input.value = id;
+                        exportForm.appendChild(input);
+                    });
+                    
+                    // 提交表单
+                    exportForm.submit();
+                }
+            });
+            
+            // 导入Excel表单提交
+            document.getElementById('importForm').addEventListener('submit', function(e) {
+                const fileInput = document.getElementById('excelFile');
+                if (!fileInput.files.length) {
+                    e.preventDefault();
+                    alert('请选择要导入的Excel文件');
+                }
+            });
+        </script>
+</body>
+</html>
