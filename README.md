@@ -1,4 +1,4 @@
-# IP地址管理系统 - 项目需求与实现
+<img width="1920" height="919" alt="image" src="https://github.com/user-attachments/assets/4e6fbb1e-ea90-4dbf-97cb-d9564d238d78" /># IP地址管理系统 - 项目需求与实现
 
 ## 技术栈
 - **后端框架**：Flask
@@ -21,11 +21,11 @@
 5. 可查看或编辑IP的详细信息
 6. 可定制化搜索IP
 
-![Snipaste_2025-11-13_17-13-00](https://fcxiaoyangliu.oss-cn-hangzhou.aliyuncs.com/202511131745186.png)
+![Snipaste_2025-11-13_17-13-00](http://cokei521.de5.net:8090/upload/Snipaste_2025-11-25_15-16-14.jpg) 
 
 ### 编辑IP
 
-![image-20251113174714234](https://fcxiaoyangliu.oss-cn-hangzhou.aliyuncs.com/202511131747336.png)
+![image-20251113174714234](http://cokei521.de5.net:8090/upload/Snipaste_2025-11-25_15-16-29.jpg) 
 
 ## 实现的功能
 
@@ -215,3 +215,4 @@ python app.py
 
 ### 5. 停止应用
 在终端中按下`Ctrl + C`组合键即可停止应用
+
