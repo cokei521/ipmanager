@@ -1,4 +1,4 @@
-<img width="1920" height="919" alt="image" src="https://github.com/user-attachments/assets/4e6fbb1e-ea90-4dbf-97cb-d9564d238d78" /># IP地址管理系统 - 项目需求与实现
+# IP地址管理系统 - 项目需求与实现
 
 ## 技术栈
 - **后端框架**：Flask
@@ -215,4 +215,5 @@ python app.py
 
 ### 5. 停止应用
 在终端中按下`Ctrl + C`组合键即可停止应用
+
 
