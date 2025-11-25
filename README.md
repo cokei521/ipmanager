@@ -21,7 +21,7 @@
 5. 可查看或编辑IP的详细信息
 6. 可定制化搜索IP
 
-![Snipaste_2025-11-13_17-13-00](http://cokei521.de5.net:8090/upload/Snipaste_2025-11-25_15-16-14.jpg) 
+![Snipaste_2025-11-13_17-13-00](http://cokei521.de5.net:8090/upload/Snipaste_2025-11-25_15-16-14-Gyyw.jpg)  
 
 ### 编辑IP
 
@@ -215,6 +215,7 @@ python app.py
 
 ### 5. 停止应用
 在终端中按下`Ctrl + C`组合键即可停止应用
+
 
 
 
