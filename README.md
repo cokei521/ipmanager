@@ -123,36 +123,36 @@ IP地址记录包含以下字段：
 您可以通过修改代码来自定义首次打开页面时显示的列数据。所有修改都需要在`templates/index.html`文件中进行：
 
 1. **修改表格头部列的显示状态**
-   - 找到文件中表格头部（大约第400-430行）的`<th>`标签
+   - 找到文件中表格头部（大约第759-777行）的`<th>`标签
    - 对于想要默认显示的列，移除其`class="hidden-column"`属性
    - 例如，将"关联设备"列从隐藏改为显示：
      ```html
      <!-- 修改前 -->
-     <th data-column="related_device" class="hidden-column">关联设备</th>
+     <th data-column="related_device" class="hidden-column">关联设备</th> 
      <!-- 修改后 -->
      <th data-column="related_device">关联设备</th>
      ```
 
 2. **修改表格数据行列的显示状态**
-   - 找到文件中表格数据行（大约第420-450行）的`<td>`标签
+   - 找到文件中表格数据行（大约第783-801行）的`<td>`标签
    - 对于想要默认显示的列，移除其`class="hidden-column"`属性
    - 例如，将"关联设备"列的数据行从隐藏改为显示：
      ```html
      <!-- 修改前 -->
-     <td data-column="related_device" class="hidden-column">{{ ip.related_device or '' }}</td>
+     <td data-column="related_device" class="hidden-column">{{ ip.related_device or '' }}</td> 
      <!-- 修改后 -->
-     <td data-column="related_device">{{ ip.related_device or '' }}</td>
+     <td data-column="related_device">{{ ip.related_device or '' }}</td> 
      ```
 
 3. **修改列选择模态框的默认选中状态**
-   - 找到文件中列选择模态框（大约第100-200行）的复选框输入元素
+   - 找到文件中列选择模态框（大约第492-600行）的复选框输入元素
    - 对于想要默认显示的列，在其`<input>`标签中添加`checked`属性
    - 例如，将"关联设备"列的复选框默认设为选中：
      ```html
      <!-- 修改前 -->
-     <input class="form-check-input column-checkbox" type="checkbox" value="related_device" id="related_device">
+     <input class="form-check-input column-checkbox" type="checkbox" value="related_device" id="related_device"> 
      <!-- 修改后 -->
-     <input class="form-check-input column-checkbox" type="checkbox" value="related_device" id="related_device" checked>
+     <input class="form-check-input column-checkbox" type="checkbox" value="related_device" id="related_device" checked> 
      ```
 
 **注意**：
@@ -215,5 +215,6 @@ python app.py
 
 ### 5. 停止应用
 在终端中按下`Ctrl + C`组合键即可停止应用
+
 
 
